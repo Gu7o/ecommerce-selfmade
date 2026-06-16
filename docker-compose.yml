@@ -4,5 +4,35 @@ services:
       context: ./docker/postgres
     env_file:
       - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - internal
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
     ports:
-      - "5432:5432"
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - internal
+
+networks:
+  internal:
+
+volumes:
+  postgres_data:
